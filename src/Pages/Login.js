@@ -55,7 +55,8 @@ const Login = () => {
       if (response.data.success) {
         // Save token for authenticated routes
         localStorage.setItem("token", response.data.token);
-
+        localStorage.setItem("userId", response.data.user.id);
+        localStorage.setItem("email", response.data.user.email);
         setAlert({
           open: true,
           message: "✅ Login successful! Redirecting...",

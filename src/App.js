@@ -11,6 +11,8 @@ import Feedback from "./Pages/Feedback";
 import ContactUs from "./Pages/ContactUs";
 import ForgotPassword from "./Pages/ForgotPassword";
 import MapDashboard from "./Pages/MapDashboard";
+import Profile from "./Pages/Profile";
+import Review from "./Pages/Review";
 
 function App() {
   return (
@@ -23,11 +25,13 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Registration />} />
         <Route path="/report" element={<Complaint />} />
+        <Route path="/review" element={<Review />} />
         <Route path="/about" element={<AboutcityVision/>}/>
         <Route path="/feedback" element={<Feedback/>}/>
         <Route path="/contact" element={<ContactUs/>}/>
         <Route path="/forgot-password" element={<ForgotPassword/>} />
         <Route path="/map" element={<MapDashboard />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
 
       <Footer />

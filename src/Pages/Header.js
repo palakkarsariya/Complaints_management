@@ -12,14 +12,16 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Link } from "react-router-dom";
-import logo1 from "../Assets/img/logo1.png";
+import logo1 from ".././Assets/img/logo1.png";
 
 const pages = [
   { name: "Home", path: "/" },
   { name: "About CityVision", path: "/about" },
   { name: "Report Issue", path: "/report" },
-  { name: "Map Dashboard", path: "/map" },
+  { name: "review", path: "/review" },
+  // { name: "Map Dashboard", path: "/map" },
   { name: "Contact Us", path: "/contact" },
+  { name: "My Profile", path: "/profile" },
 ];
 
 const Header = () => {

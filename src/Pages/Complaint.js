@@ -14,8 +14,8 @@ import axios from "axios";
 const Complaint = () => {
   const navigate = useNavigate();
 
-  // 🔐 Check login token
   const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("userId"); // 🔥 IMPORTANT
 
   const [form, setForm] = useState({
     name: "",
@@ -26,28 +26,29 @@ const Complaint = () => {
     image: null,
   });
 
-  const [alert, setAlert] = useState({ open: false, message: "", severity: "" });
+  const [alert, setAlert] = useState({
+    open: false,
+    message: "",
+    severity: "",
+  });
 
   const categories = [
     "Road Damage",
-    "Street Light",
     "Garbage Issue",
     "Water Supply",
     "Electricity",
-    "Public Safety",
   ];
 
-  // ❌ If no token → block complaint page
-  if (!token) {
+  // Block if not logged in
+  if (!token || !userId) {
     return (
       <Box sx={{ textAlign: "center", mt: 12 }}>
         <Typography variant="h5" color="error" fontWeight={700}>
           ⚠ You must login to submit a complaint.
         </Typography>
-
         <Button
           variant="contained"
-          sx={{ mt: 3, backgroundColor: "#1E88E5" }}
+          sx={{ mt: 3 }}
           onClick={() => navigate("/login")}
         >
           Go to Login
@@ -56,39 +57,52 @@ const Complaint = () => {
     );
   }
 
-  // Input change
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleImageChange = (e) => {
     setForm({ ...form, image: e.target.files[0] });
   };
 
-  const handleCloseAlert = () => setAlert({ ...alert, open: false });
+  const handleCloseAlert = () =>
+    setAlert({ ...alert, open: false });
 
-  // Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.name || !form.category || !form.location || !form.pincode || !form.description || !form.image) {
-      setAlert({ open: true, message: "Please fill all fields.", severity: "warning" });
+    if (
+      !form.name ||
+      !form.category ||
+      !form.location ||
+      !form.pincode ||
+      !form.description ||
+      !form.image
+    ) {
+      setAlert({
+        open: true,
+        message: "Please fill all fields.",
+        severity: "warning",
+      });
       return;
     }
 
     try {
       const formData = new FormData();
+
+      // Append all fields
       Object.keys(form).forEach((key) => {
         formData.append(key, form[key]);
       });
+
+      // 🔥 Append userId separately
+      formData.append("userId", userId);
 
       const response = await axios.post(
         "http://localhost:1300/api/Comp/addComp",
         formData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${token}`,
           },
         }
@@ -101,6 +115,7 @@ const Complaint = () => {
           severity: "success",
         });
 
+        // Reset form
         setForm({
           name: "",
           category: "",
@@ -111,37 +126,54 @@ const Complaint = () => {
         });
       }
     } catch (error) {
+      console.error("Complaint Error:", error);
+
       setAlert({
         open: true,
         message:
+          error.response?.data?.message ||
           error.response?.data?.error ||
-          "Something went wrong. Try again later.",
+          "Something went wrong.",
         severity: "error",
       });
     }
   };
 
   return (
-    <Box sx={{ display: "flex", justifyContent: "center", minHeight: "90vh", margin:"60px 0px"}}>
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        minHeight: "90vh",
+        mt: 6,
+      }}
+    >
       <Box
         component="form"
         onSubmit={handleSubmit}
         sx={{
           width: { xs: "90%", sm: "70%", md: "50%" },
-          boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
-          borderRadius: "12px",
+          boxShadow: 4,
+          borderRadius: 3,
           backgroundColor: "white",
-          padding: "40px 30px",
+          p: 4,
         }}
       >
         <Typography
           variant="h5"
-          sx={{ textAlign: "center", color: "#1E88E5", mb: 3, fontWeight: 700 }}
+          sx={{ textAlign: "center", mb: 3, fontWeight: 700 }}
         >
-          COMPLAINT FORM
+          Complaint Form
         </Typography>
 
-        <TextField name="name" label="Your Name" value={form.name} onChange={handleChange} fullWidth sx={{ mb: 3 }} />
+        <TextField
+          name="name"
+          label="Your Name"
+          value={form.name}
+          onChange={handleChange}
+          fullWidth
+          sx={{ mb: 3 }}
+        />
 
         <TextField
           name="category"
@@ -159,8 +191,23 @@ const Complaint = () => {
           ))}
         </TextField>
 
-        <TextField name="location" label="Enter Location" value={form.location} onChange={handleChange} fullWidth sx={{ mb: 3 }} />
-        <TextField name="pincode" label="Enter Pincode" value={form.pincode} onChange={handleChange} fullWidth sx={{ mb: 3 }} />
+        <TextField
+          name="location"
+          label="Location"
+          value={form.location}
+          onChange={handleChange}
+          fullWidth
+          sx={{ mb: 3 }}
+        />
+
+        <TextField
+          name="pincode"
+          label="Pincode"
+          value={form.pincode}
+          onChange={handleChange}
+          fullWidth
+          sx={{ mb: 3 }}
+        />
 
         <TextField
           name="description"
@@ -175,25 +222,25 @@ const Complaint = () => {
 
         <Box sx={{ mb: 3 }}>
           <Typography sx={{ mb: 1 }}>Upload Image</Typography>
-          <input accept="image/*" type="file" onChange={handleImageChange} />
+          <input
+            accept="image/*"
+            type="file"
+            onChange={handleImageChange}
+          />
         </Box>
 
-        <Button
-          type="submit"
-          variant="contained"
-          fullWidth
-          sx={{
-            height: "50px",
-            fontSize: "16px",
-            fontWeight: 600,
-            backgroundColor: "#1E88E5",
-          }}
-        >
+        <Button type="submit" variant="contained" fullWidth>
           Register Complaint
         </Button>
 
-        <Snackbar open={alert.open} autoHideDuration={3000} onClose={handleCloseAlert}>
-          <Alert severity={alert.severity}>{alert.message}</Alert>
+        <Snackbar
+          open={alert.open}
+          autoHideDuration={3000}
+          onClose={handleCloseAlert}
+        >
+          <Alert severity={alert.severity}>
+            {alert.message}
+          </Alert>
         </Snackbar>
       </Box>
     </Box>

@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Typography, Grid, Paper } from "@mui/material";
-import CityImage from "../Assets/img/home/herosec2.jpg"; // You can use any image that fits your theme
+import CityImage from ".././Assets/img/home/herosec2.jpg"; // You can use any image that fits your theme
 
 const AboutcityVision = () => {
   return (

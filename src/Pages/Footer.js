@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Typography, Grid, Link, Divider } from "@mui/material";
-import bg from "../Assets/img/Footer/bg.jpg";
+import bg from ".././Assets/img/Footer/bg.jpg";
 
 const Footer = () => {
   return (
