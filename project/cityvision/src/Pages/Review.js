@@ -37,7 +37,7 @@ const Review = () => {
 
   const fetchReviews = async()=>{
     try{
-      const res = await axios.get("http://localhost:1300/api/review/get");
+      const res = await axios.get("https://citivision-backend.onrender.com/api/review/get");
       setReviews(res.data);
     }catch(error){
       console.log(error);
@@ -65,7 +65,7 @@ const Review = () => {
     try{
 
       await axios.post(
-        "http://localhost:1300/api/review/add",
+        "https://citivision-backend.onrender.com/api/review/add",
         form
       );
 

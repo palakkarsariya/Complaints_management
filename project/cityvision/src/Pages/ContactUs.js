@@ -52,7 +52,7 @@ const ContactUs = () => {
     try{
 
       await axios.post(
-        "http://localhost:1300/api/message/send",
+        "https://citivision-backend.onrender.com/api/message/send",
         form
       );
 

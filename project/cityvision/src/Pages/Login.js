@@ -50,7 +50,7 @@ const Login = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:1300/api/User/loginUser", formData);
+      const response = await axios.post("https://citivision-backend.onrender.com/api/User/loginUser", formData);
 
       if (response.data.success) {
         // Save token for authenticated routes

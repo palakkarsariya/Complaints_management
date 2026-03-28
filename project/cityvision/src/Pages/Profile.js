@@ -30,7 +30,7 @@ const Profile = () => {
     const fetchComplaints = async()=>{
   
       const res = await axios.get(
-        `http://localhost:1300/api/Comp/user/${userId}`
+        `https://citivision-backend.onrender.com/api/Comp/user/${userId}`
       );
   
       setComplaints(res.data);

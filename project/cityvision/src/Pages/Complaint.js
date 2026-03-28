@@ -99,7 +99,7 @@ const Complaint = () => {
       formData.append("userId", userId);
 
       const response = await axios.post(
-        "http://localhost:1300/api/Comp/addComp",
+        "https://citivision-backend.onrender.com/api/Comp/addComp",
         formData,
         {
           headers: {

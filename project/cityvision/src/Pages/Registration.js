@@ -65,7 +65,7 @@ const Registration = () => {
 
     try{
       const response = await axios.post(
-        "http://localhost:1300/api/User/addUser",
+        "https://citivision-backend.onrender.com/api/User/addUser",
         formData,
         {
           headers:{

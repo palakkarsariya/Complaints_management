@@ -43,7 +43,7 @@ const ForgotPassword = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:1300/api/reset-pass", {
+      const response = await axios.post("https://citivision-backend.onrender.com/api/reset-pass", {
         email,
         newPassword: newPass,
       });
