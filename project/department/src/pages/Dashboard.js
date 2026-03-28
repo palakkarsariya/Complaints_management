@@ -25,7 +25,7 @@ const DepartmentDashboard = () => {
     const fetchComplaints = async ()=>{
 
       const res = await axios.get(
-        "http://localhost:1300/api/Comp/department",
+        "https://citivision-backend.onrender.com/api/Comp/department",
         {
           params:{
             category:department,

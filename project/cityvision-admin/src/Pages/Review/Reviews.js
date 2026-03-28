@@ -28,7 +28,7 @@ fetchReviews();
 const fetchReviews = async()=>{
 
 const res = await axios.get(
-"http://localhost:1300/api/review/get"
+"https://citivision-backend.onrender.com/api/review/get"
 );
 
 setReviews(res.data);
@@ -38,7 +38,7 @@ setReviews(res.data);
 const handleDelete = async(id)=>{
 
 await axios.delete(
-`http://localhost:1300/api/review/delete/${id}`
+`https://citivision-backend.onrender.com/api/review/delete/${id}`
 );
 
 fetchReviews();

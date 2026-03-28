@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:1300/api"
+  baseURL: "https://citivision-backend.onrender.com/api"
 });
 
 API.interceptors.request.use((req) => {

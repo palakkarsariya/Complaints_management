@@ -28,7 +28,7 @@ const AdminIssues = () => {
   // ✅ Fetch Issues
   const fetchIssues = async () => {
     try {
-      const res = await axios.get("http://localhost:1300/api/Comp/getall");
+      const res = await axios.get("https://citivision-backend.onrender.com/api/Comp/getall");
       setIssues(res.data);
     } catch (error) {
       console.log("Error fetching issues:", error);
@@ -44,7 +44,7 @@ const AdminIssues = () => {
   // ✅ Update Status
   const handleStatusChange = async (id, newStatus) => {
     try {
-      await axios.put(`http://localhost:1300/api/Comp/update/${id}`, {
+      await axios.put(`https://citivision-backend.onrender.com/api/Comp/update/${id}`, {
         status: newStatus,
       });
 
@@ -64,7 +64,7 @@ const AdminIssues = () => {
     if (!window.confirm("Are you sure you want to delete this issue?")) return;
 
     try {
-      await axios.delete(`http://localhost:1300/api/Comp/delete/${id}`);
+      await axios.delete(`https://citivision-backend.onrender.com/api/Comp/delete/${id}`);
 
       // Update UI
       setIssues(issues.filter((issue) => issue._id !== id));

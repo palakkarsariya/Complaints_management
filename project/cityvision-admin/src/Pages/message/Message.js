@@ -28,7 +28,7 @@ fetchMessages();
 const fetchMessages = async()=>{
 
 const res = await axios.get(
-"http://localhost:1300/api/message/get"
+"https://citivision-backend.onrender.com/api/message/get"
 );
 
 setMessages(res.data);
@@ -38,7 +38,7 @@ setMessages(res.data);
 const handleDelete = async(id)=>{
 
 await axios.delete(
-`http://localhost:1300/api/message/delete/${id}`
+`https://citivision-backend.onrender.com/api/message/delete/${id}`
 );
 
 fetchMessages();

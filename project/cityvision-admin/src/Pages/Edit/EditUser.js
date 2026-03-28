@@ -18,7 +18,7 @@ const EditUser = () => {
   // Fetch user details
   const fetchUser = async () => {
     try {
-      const res = await axios.get(`http://localhost:1300/api/User/users/${id}`);
+      const res = await axios.get(`https://citivision-backend.onrender.com/api/User/users/${id}`);
       setForm(res.data);
     } catch (error) {
       console.log("Error loading user:", error);
@@ -33,7 +33,7 @@ const EditUser = () => {
 
   const handleUpdate = async () => {
     try {
-      await axios.put(`http://localhost:1300/api/User/edit/${id}`, form);
+      await axios.put(`https://citivision-backend.onrender.com/api/User/edit/${id}`, form);
       alert("User Updated Successfully!");
       navigate("/users");
     } catch (error) {

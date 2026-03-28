@@ -37,7 +37,7 @@ const DepartmentComplaints = () => {
       const zone = localStorage.getItem("zone");
 
       const res = await axios.get(
-        "http://localhost:1300/api/Comp/department",
+        "https://citivision-backend.onrender.com/api/Comp/department",
         {
           params: {
             category: department,
@@ -71,7 +71,7 @@ const DepartmentComplaints = () => {
     try {
 
       await axios.put(
-        `http://localhost:1300/api/Comp/update/${id}`,
+        `https://citivision-backend.onrender.com/api/Comp/update/${id}`,
         { status: newStatus }
       );
 

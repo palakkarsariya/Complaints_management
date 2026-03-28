@@ -65,7 +65,7 @@ fetchUsers();
 const fetchUsers = async()=>{
 
 const res = await axios.get(
-"http://localhost:1300/api/departmentUser/get"
+"https://citivision-backend.onrender.com/api/departmentUser/get"
 );
 
 setUsers(res.data);
@@ -107,14 +107,14 @@ const handleSubmit = async()=>{
 if(editId){
 
 await axios.put(
-`http://localhost:1300/api/departmentUser/update/${editId}`,
+`https://citivision-backend.onrender.com/api/departmentUser/update/${editId}`,
 form
 );
 
 }else{
 
 await axios.post(
-"http://localhost:1300/api/departmentUser/add",
+"https://citivision-backend.onrender.com/api/departmentUser/add",
 form
 );
 
@@ -147,7 +147,7 @@ const handleDelete = async(id)=>{
 if(window.confirm("Delete this user?")){
 
 await axios.delete(
-`http://localhost:1300/api/departmentUser/delete/${id}`
+`https://citivision-backend.onrender.com/api/departmentUser/delete/${id}`
 );
 
 fetchUsers();

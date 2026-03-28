@@ -39,7 +39,7 @@ const MapDashboard = () => {
       const zone = localStorage.getItem("zone");
 
       const res = await axios.get(
-        "http://localhost:1300/api/Comp/department",
+        "https://citivision-backend.onrender.com/api/Comp/department",
         {
           params: {
             category: department,

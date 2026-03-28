@@ -21,7 +21,7 @@ const Dashboard = () => {
   // Fetch complaints from backend
   const fetchComplaints = async () => {
     try {
-      const res = await axios.get("http://localhost:1300/api/Comp/getall");
+      const res = await axios.get("https://citivision-backend.onrender.com/api/Comp/getall");
       setComplaints(res.data); // Ensure backend returns array only
     } catch (error) {
       console.error("Error fetching dashboard data:", error);

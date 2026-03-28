@@ -62,7 +62,7 @@ const Login = () => {
       setLoading(true);
 
       const res = await axios.post(
-        "http://localhost:1300/api/admin/login",
+        "https://citivision-backend.onrender.com/api/admin/login",
         formData
       );
 

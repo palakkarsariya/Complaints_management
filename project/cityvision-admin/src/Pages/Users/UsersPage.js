@@ -30,7 +30,7 @@ const UsersPage = () => {
   // Fetch users
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("http://localhost:1300/api/User/allUser");
+      const res = await axios.get("https://citivision-backend.onrender.com/api/User/allUser");
       setUsers(res.data);
       setLoading(false);
     } catch (error) {
@@ -48,7 +48,7 @@ const UsersPage = () => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
 
     try {
-      await axios.delete(`http://localhost:1300/api/User/delete/${id}`);
+      await axios.delete(`https://citivision-backend.onrender.com/api/User/delete/${id}`);
       setUsers(users.filter((u) => u._id !== id));
     } catch (error) {
       console.log("Error deleting user:", error);
