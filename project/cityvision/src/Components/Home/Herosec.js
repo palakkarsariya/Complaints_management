@@ -3,9 +3,7 @@ import { useRef, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
-import { Navigation } from 'swiper/modules';
-import herose1 from '../../Assets/img/home/herosec1.jpg'
-import herose2 from '../../Assets/img/home/herosec2.jpg'
+
 import herose3 from '../../Assets/img/home/herosec3.jpg'
 
 
