@@ -23,7 +23,6 @@ const Profile = () => {
 
   const [complaints,setComplaints] = useState([]);
 
-  // const userId = localStorage.getItem("userId");
   const email = localStorage.getItem("email");
   
   useEffect(() => {

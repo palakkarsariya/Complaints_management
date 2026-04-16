@@ -12,156 +12,185 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
+
 import Visibility from "@mui/icons-material/Visibility";
-import axios from "axios";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const Registration = () => {
-  // ✅ Form data
+
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
-    name:"",
+    name: "",
     email: "",
-    address:"",
+    address: "",
     password: "",
     confirmPassword: "",
   });
 
-  const navigate = useNavigate();
-  // ✅ Visibility toggles
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // ✅ Alerts
-  const [alert, setAlert] = useState({ open: false, message: "", severity: "" });
+  const [alert, setAlert] = useState({
+    open: false,
+    message: "",
+    severity: "success"
+  });
 
-  // ✅ Handle input change
+  // 🔹 Handle Input
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value
+    });
   };
 
-  // ✅ Submit handler
-  const handleSubmit = async(e) => {
+  // 🔹 Submit Form
+  const handleSubmit = async (e) => {
+
     e.preventDefault();
 
-    // Simple validation
-    if (!formData.email || !formData.password || !formData.confirmPassword) {
-      setAlert({ open: true, message: "Please fill all fields.", severity: "warning" });
-      return;
+    const { name, email, address, password, confirmPassword } = formData;
+
+    // ✅ Validation
+    if (!name || !email || !address || !password || !confirmPassword) {
+      return setAlert({
+        open: true,
+        message: "Please fill all fields",
+        severity: "warning"
+      });
     }
 
-    // Check password match
-    if (formData.password !== formData.confirmPassword) {
-      setAlert({ open: true, message: "Passwords do not match!", severity: "error" });
-      return;
+    if (password !== confirmPassword) {
+      return setAlert({
+        open: true,
+        message: "Passwords do not match",
+        severity: "error"
+      });
     }
 
-    // Basic email validation
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(formData.email)) {
-      setAlert({ open: true, message: "Please enter a valid email address.", severity: "error" });
-      return;
+
+    if (!emailPattern.test(email)) {
+      return setAlert({
+        open: true,
+        message: "Enter valid email",
+        severity: "error"
+      });
     }
 
-    try{
-      const response = await axios.post(
+    try {
+
+      const res = await axios.post(
         "https://citivision-backend.onrender.com/api/User/addUser",
-        formData,
-        {
-          headers:{
-            Authorization:`Bearer ${localStorage.getItem("token")}`
-          }
-        }
-      )
-      if(response.data.success){
-         setAlert("✅ Registration successful! You can now login.");
-        setTimeout(() => navigate("/login"), 1500);
+        formData
+      );
+
+      if (res.data.success) {
+
+        setAlert({
+          open: true,
+          message: "Registration successful!",
+          severity: "success"
+        });
+
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
+
       }
-    }catch (error) {
-      if (error.response && !error.response.data.success) {
-        setAlert(`❌ ${error.response.data.error || "Email already registered!"}`);
-      } else {
-        setAlert("❌ Something went wrong. Try again later.");
-      }
+
+    } catch (error) {
+
+      setAlert({
+        open: true,
+        message:
+          error.response?.data?.error ||
+          "Email already registered or server error",
+        severity: "error"
+      });
+
     }
 
   };
 
-  // ✅ Toggle password visibility
-  const handleClickShowPassword = () => setShowPassword(!showPassword);
-  const handleClickShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
-
-  const handleCloseAlert = () => setAlert({ ...alert, open: false });
+  const handleCloseAlert = () => {
+    setAlert({ ...alert, open: false });
+  };
 
   return (
+
     <Box
       sx={{
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        minHeight: "90vh",
-        backgroundColor: "#F4F8FB",
-        py: 6,
+        minHeight: "100vh",
+        background: "#F4F8FB",
+        px: 2
       }}
     >
+
       <Box
         component="form"
         onSubmit={handleSubmit}
         sx={{
-          width: "60%",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
-          borderRadius: "10px",
-          backgroundColor: "white",
-          padding: "4% 3%",
+          width: { xs: "100%", md: "50%" },
+          p: 4,
+          borderRadius: 3,
+          background: "white",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.15)"
         }}
       >
+
         <Typography
-          variant="h5"
+          variant="h4"
           sx={{
             textAlign: "center",
             color: "#1E88E5",
             fontWeight: 700,
-            mb: 4,
-            letterSpacing: 1,
+            mb: 4
           }}
         >
-          USER REGISTRATION
+          User Registration
         </Typography>
 
-        {/* Name Field */}
+        {/* Name */}
         <TextField
           id="name"
-          label="Enter name"
-          variant="outlined"
+          label="Full Name"
           fullWidth
           sx={{ mb: 3 }}
           value={formData.name}
           onChange={handleChange}
         />
-        {/* Email Field */}
+
+        {/* Email */}
         <TextField
           id="email"
-          label="Enter Email"
-          variant="outlined"
+          label="Email Address"
           fullWidth
           sx={{ mb: 3 }}
           value={formData.email}
           onChange={handleChange}
         />
-        {/* address Field */}
+
+        {/* Address */}
         <TextField
           id="address"
-          label="Enter address"
-          variant="outlined"
+          label="Address"
           fullWidth
           sx={{ mb: 3 }}
           value={formData.address}
           onChange={handleChange}
         />
 
-        {/* Password Field */}
-        <FormControl fullWidth variant="outlined" sx={{ mb: 3 }}>
-          <InputLabel htmlFor="password">Password</InputLabel>
+        {/* Password */}
+        <FormControl fullWidth sx={{ mb: 3 }}>
+          <InputLabel>Password</InputLabel>
           <OutlinedInput
             id="password"
             type={showPassword ? "text" : "password"}
@@ -169,11 +198,7 @@ const Registration = () => {
             onChange={handleChange}
             endAdornment={
               <InputAdornment position="end">
-                <IconButton
-                  onClick={handleClickShowPassword}
-                  edge="end"
-                  aria-label="toggle password visibility"
-                >
+                <IconButton onClick={() => setShowPassword(!showPassword)}>
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
@@ -182,9 +207,9 @@ const Registration = () => {
           />
         </FormControl>
 
-        {/* Confirm Password Field */}
-        <FormControl fullWidth variant="outlined" sx={{ mb: 3 }}>
-          <InputLabel htmlFor="confirmPassword">Confirm Password</InputLabel>
+        {/* Confirm Password */}
+        <FormControl fullWidth sx={{ mb: 3 }}>
+          <InputLabel>Confirm Password</InputLabel>
           <OutlinedInput
             id="confirmPassword"
             type={showConfirmPassword ? "text" : "password"}
@@ -192,11 +217,7 @@ const Registration = () => {
             onChange={handleChange}
             endAdornment={
               <InputAdornment position="end">
-                <IconButton
-                  onClick={handleClickShowConfirmPassword}
-                  edge="end"
-                  aria-label="toggle confirm password visibility"
-                >
+                <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
                   {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
@@ -205,36 +226,36 @@ const Registration = () => {
           />
         </FormControl>
 
-        {/* Submit Button */}
+        {/* Button */}
         <Button
           type="submit"
-          variant="contained"
           fullWidth
+          variant="contained"
           sx={{
-            backgroundColor: "#1E88E5",
-            color: "white",
-            fontWeight: 600,
-            borderRadius: "25px",
             py: 1.5,
-            fontSize: "16px",
-            textTransform: "none",
-            "&:hover": { backgroundColor: "#00E5FF", color: "black" },
+            borderRadius: "25px",
+            fontWeight: 600,
+            background: "#1E88E5",
+            "&:hover": {
+              background: "#00E5FF",
+              color: "black"
+            }
           }}
         >
-          Register Now
+          Register
         </Button>
 
-        {/* Snackbar Alert */}
+        {/* Alert */}
         <Snackbar
           open={alert.open}
           autoHideDuration={3000}
           onClose={handleCloseAlert}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
-          <Alert severity={alert.severity} onClose={handleCloseAlert}>
+          <Alert severity={alert.severity}>
             {alert.message}
           </Alert>
         </Snackbar>
+
       </Box>
     </Box>
   );

@@ -1,9 +1,7 @@
 import React from 'react'
-// import { useRef, useState } from 'react';
 import {  SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
-
 import herose3 from '../../Assets/img/home/herosec3.jpg'
 
 
@@ -19,7 +17,7 @@ const Herosec = () => {
       </Swiper> */}
       <SwiperSlide>
   <div style={{ position: "relative" }}>
-    <img src={herose3} style={{ height: "70vh", width: "100%", objectFit: "cover" }} />
+    <img src={herose3} alt='image of home' style={{ height: "70vh", width: "100%", objectFit: "cover" }} />
     <div style={{
       position: "absolute",
       top: "25%",
