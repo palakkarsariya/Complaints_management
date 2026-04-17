@@ -24,19 +24,47 @@ const Profile = () => {
 
   const email = localStorage.getItem("email");
 
+  /* ===============================
+     📥 Fetch Complaints (FIXED)
+  =============================== */
+  const fetchComplaints = async (userId) => {
+    try {
+
+      const res = await axios.get(
+        `https://citivision-backend.onrender.com/api/Comp/user/${userId}`
+      );
+
+      console.log("API:", res.data);
+
+      // ✅ ALWAYS ensure array
+      const data = Array.isArray(res.data.complaints)
+        ? res.data.complaints
+        : [];
+
+      setComplaints(data);
+
+    } catch (error) {
+      console.log("Error fetching complaints:", error);
+      setComplaints([]);
+    }
+  };
+
+  /* ===============================
+     🔄 useEffect
+  =============================== */
   useEffect(() => {
 
-  const token = localStorage.getItem("token");
-  const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
 
-  if (!token || !userId) {
-    navigate("/login");
-    return;
-  }
+    if (!token || !userId) {
+      navigate("/login");
+      return;
+    }
 
-  fetchComplaints(userId);
+    fetchComplaints(userId);
 
-}, [navigate]);
+  }, [navigate]);
 
   /* ===============================
      🚪 Logout
@@ -50,11 +78,10 @@ const Profile = () => {
 
     <Box sx={{ p: 6, background: "#F4F8FB", minHeight: "90vh" }}>
 
-      {/* ================= Profile Card ================= */}
-
+      {/* Profile */}
       <Paper sx={{ p: 4, mb: 5, borderRadius: 3 }}>
 
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
 
@@ -71,7 +98,6 @@ const Profile = () => {
 
           </Box>
 
-          {/* Logout Button */}
           <Button
             variant="contained"
             startIcon={<LogoutIcon />}
@@ -88,8 +114,7 @@ const Profile = () => {
 
       </Paper>
 
-      {/* ================= Complaints Table ================= */}
-
+      {/* Complaints */}
       <Typography variant="h5" sx={{ mb: 3, fontWeight: 700 }}>
         My Complaints
       </Typography>
@@ -109,11 +134,10 @@ const Profile = () => {
 
           <TableBody>
 
-            {/* ✅ Safe Rendering */}
-            {Array.isArray(complaints) && complaints.length > 0 ? (
+            {complaints.length > 0 ? (
 
               complaints.map((c) => (
-                <TableRow key={c._id}>
+                <TableRow key={c.id || c._id}>
 
                   <TableCell>{c.category}</TableCell>
                   <TableCell>{c.location}</TableCell>
