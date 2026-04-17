@@ -17,7 +17,7 @@ const Herosec = () => {
       </Swiper> */}
       <SwiperSlide>
   <div style={{ position: "relative" }}>
-    <img src={herose3} alt='image of home' style={{ height: "70vh", width: "100%", objectFit: "cover" }} />
+    <img src={herose3} alt="image of home" style={{ height: "70vh", width: "100%", objectFit: "cover" }} />
     <div style={{
       position: "absolute",
       top: "25%",
