@@ -25,7 +25,7 @@ const Profile = () => {
   const email = localStorage.getItem("email");
 
   /* ===============================
-     📥 Fetch Complaints (FIXED)
+     📥 Fetch Complaints
   =============================== */
   const fetchComplaints = async (userId) => {
     try {
@@ -34,18 +34,23 @@ const Profile = () => {
         `https://citivision-backend.onrender.com/api/Comp/user/${userId}`
       );
 
-      console.log("API:", res.data);
+      console.log("API RESPONSE:", res.data);
 
-      // ✅ ALWAYS ensure array
-      const data = Array.isArray(res.data.complaints)
-        ? res.data.complaints
-        : [];
+      // ✅ Handle ALL possible formats safely
+      const data =
+        Array.isArray(res.data)
+          ? res.data
+          : Array.isArray(res.data?.complaints)
+          ? res.data.complaints
+          : [];
 
       setComplaints(data);
 
     } catch (error) {
-      console.log("Error fetching complaints:", error);
+
+      console.error("Fetch Error:", error);
       setComplaints([]);
+
     }
   };
 
@@ -78,10 +83,10 @@ const Profile = () => {
 
     <Box sx={{ p: 6, background: "#F4F8FB", minHeight: "90vh" }}>
 
-      {/* Profile */}
+      {/* ================= Profile Section ================= */}
       <Paper sx={{ p: 4, mb: 5, borderRadius: 3 }}>
 
-        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
 
@@ -114,13 +119,12 @@ const Profile = () => {
 
       </Paper>
 
-      {/* Complaints */}
+      {/* ================= Complaints Section ================= */}
       <Typography variant="h5" sx={{ mb: 3, fontWeight: 700 }}>
         My Complaints
       </Typography>
 
       <TableContainer component={Paper}>
-
         <Table>
 
           <TableHead sx={{ background: "#1E88E5" }}>
@@ -134,13 +138,15 @@ const Profile = () => {
 
           <TableBody>
 
-            {complaints.length > 0 ? (
+            {/* ✅ SAFE RENDERING */}
+            {(Array.isArray(complaints) ? complaints : []).length > 0 ? (
 
-              complaints.map((c) => (
+              (Array.isArray(complaints) ? complaints : []).map((c) => (
+
                 <TableRow key={c.id || c._id}>
 
-                  <TableCell>{c.category}</TableCell>
-                  <TableCell>{c.location}</TableCell>
+                  <TableCell>{c.category || "N/A"}</TableCell>
+                  <TableCell>{c.location || "N/A"}</TableCell>
 
                   <TableCell>
                     {c.createdAt
@@ -164,6 +170,7 @@ const Profile = () => {
                   </TableCell>
 
                 </TableRow>
+
               ))
 
             ) : (
@@ -179,7 +186,6 @@ const Profile = () => {
           </TableBody>
 
         </Table>
-
       </TableContainer>
 
     </Box>
