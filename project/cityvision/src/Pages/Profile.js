@@ -26,14 +26,6 @@ const Profile = () => {
   const email = localStorage.getItem("email");
   
   useEffect(() => {
-    const fetchComplaints = async()=>{
-  
-      const res = await axios.get(
-        `https://citivision-backend.onrender.com/api/Comp/user/${userId}`
-      );
-  
-      setComplaints(res.data.complaints);
-    };
 
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
@@ -43,9 +35,28 @@ const Profile = () => {
     return;
   }
 
+  const fetchComplaints = async () => {
+    try {
+
+      const res = await axios.get(
+        `https://citivision-backend.onrender.com/api/Comp/user/${userId}`
+      );
+
+      setComplaints(
+        Array.isArray(res.data.complaints)
+          ? res.data.complaints
+          : []
+      );
+
+    } catch (error) {
+      console.log(error);
+      setComplaints([]);
+    }
+  };
+
   fetchComplaints();
 
-});
+}, [navigate]);
 
   /* Logout Function */
 

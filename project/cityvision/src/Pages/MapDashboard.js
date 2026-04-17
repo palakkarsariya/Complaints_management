@@ -25,7 +25,7 @@ const MapDashboard = () => {
       try {
         // Make sure backend returns ARRAY directly (not nested)
         const response = await axios.get("https://citivision-backend.onrender.com/api/Comp/getall");
-        setIssues(response.data);
+        setIssues(response.data.complaints);
       } catch (error) {
         console.error("Error fetching complaints:", error);
       }
