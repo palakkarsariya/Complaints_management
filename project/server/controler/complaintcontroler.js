@@ -175,10 +175,21 @@ const getUserComplaints = async (req, res) => {
 
     const complaints = await Complaint.find({
       userId: req.params.userId
-    });
+    }).sort({ createdAt: -1 });
 
     const formatted = complaints.map((c) => ({
-      ...c._doc,
+      id: c._id,
+      userId: c.userId,
+      name: c.name,
+      category: c.category,
+      location: c.location,
+      pincode: c.pincode,
+      zone: c.zone,
+      description: c.description,
+      status: c.status,
+      createdAt: c.createdAt,
+      latitude: c.latitude,
+      longitude: c.longitude,
       image: c.image
         ? `http://localhost:1300/uploads/${c.image}`
         : null,
