@@ -1,98 +1,153 @@
 import User from "../Models/User.js";
 import bcrypt from "bcryptjs";
 
-
 // ------------------------------------------------------
 // ⭐ Add New User
 // ------------------------------------------------------
 export const addUser = async (req, res) => {
+
   try {
+
     const { name, email, address, password } = req.body;
 
+    // 🔹 Validation
     if (!name || !email || !password) {
-      return res
-        .status(400)
-        .json({ success: false, error: "Name, Email & Password are required" });
+      return res.status(400).json({
+        success: false,
+        message: "Name, Email and Password are required"
+      });
     }
 
-    // Check user exists
+    // 🔹 Email format validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailPattern.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email format"
+      });
+    }
+
+    // 🔹 Check if user already exists
     const existingUser = await User.findOne({ email });
+
     if (existingUser) {
-      return res
-        .status(400)
-        .json({ success: false, error: "Email already registered" });
+      return res.status(409).json({
+        success: false,
+        message: "Email already registered"
+      });
     }
 
-    // Hash password
+    // 🔹 Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
-    const newUser = new User({
+    // 🔹 Create user
+    const newUser = await User.create({
       name,
       email,
       address,
       password: hashedPassword,
     });
 
-    await newUser.save();
-
-    return res.status(201).json({
+    res.status(201).json({
       success: true,
-      message: "User added successfully",
-      user: newUser,
+      message: "User registered successfully",
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email
+      }
     });
+
   } catch (error) {
+
     console.error("Add User Error:", error);
-    res.status(500).json({ success: false, error: "Server error while adding user" });
+
+    res.status(500).json({
+      success: false,
+      message: "Server error while adding user"
+    });
+
   }
+
 };
-
-
 
 // ------------------------------------------------------
 // ⭐ Get All Users
 // ------------------------------------------------------
 export const getUsers = async (req, res) => {
+
   try {
-    const users = await User.find().sort({ createdAt: -1 });
-    return res.status(200).json(users);
+
+    const users = await User.find()
+      .select("-password") // 🔒 hide password
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: users.length,
+      users
+    });
+
   } catch (error) {
+
     console.error("Get Users Error:", error);
-    res.status(500).json({ success: false, error: "Server error while fetching users" });
+
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching users"
+    });
+
   }
+
 };
-
-
 
 // ------------------------------------------------------
 // ⭐ Get Single User
 // ------------------------------------------------------
 export const getUserById = async (req, res) => {
+
   try {
-    const user = await User.findById(req.params.id);
 
-    if (!user)
-      return res.status(404).json({ success: false, error: "User not found" });
+    const user = await User.findById(req.params.id).select("-password");
 
-    res.status(200).json(user);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      user
+    });
+
   } catch (error) {
+
     console.error("Get User Error:", error);
-    res.status(500).json({ success: false, error: "Server error while fetching user" });
+
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching user"
+    });
+
   }
+
 };
-
-
 
 // ------------------------------------------------------
 // ⭐ Update User
 // ------------------------------------------------------
 export const updateUser = async (req, res) => {
+
   try {
+
     const { name, email, address, role, status, password } = req.body;
 
     let updateData = { name, email, address, role, status };
 
-    // If password is updated, hash it
+    // 🔹 If password updated → hash it
     if (password) {
       updateData.password = await bcrypt.hash(password, 10);
     }
@@ -101,40 +156,64 @@ export const updateUser = async (req, res) => {
       req.params.id,
       updateData,
       { new: true }
-    );
+    ).select("-password");
 
-    if (!updatedUser)
-      return res.status(404).json({ success: false, error: "User not found" });
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
 
     res.status(200).json({
       success: true,
       message: "User updated successfully",
-      user: updatedUser,
+      user: updatedUser
     });
+
   } catch (error) {
+
     console.error("Update User Error:", error);
-    res.status(500).json({ success: false, error: "Server error while updating user" });
+
+    res.status(500).json({
+      success: false,
+      message: "Server error while updating user"
+    });
+
   }
+
 };
-
-
 
 // ------------------------------------------------------
 // ⭐ Delete User
 // ------------------------------------------------------
 export const deleteUser = async (req, res) => {
-  try {
-    const deleted = await User.findByIdAndDelete(req.params.id);
 
-    if (!deleted)
-      return res.status(404).json({ success: false, error: "User not found" });
+  try {
+
+    const deletedUser = await User.findByIdAndDelete(req.params.id);
+
+    if (!deletedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
 
     res.status(200).json({
       success: true,
-      message: "User deleted successfully",
+      message: "User deleted successfully"
     });
+
   } catch (error) {
+
     console.error("Delete User Error:", error);
-    res.status(500).json({ success: false, error: "Server error while deleting user" });
+
+    res.status(500).json({
+      success: false,
+      message: "Server error while deleting user"
+    });
+
   }
+
 };
