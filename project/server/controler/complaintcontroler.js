@@ -3,9 +3,9 @@ import Complaint from "../Models/complaint.js";
 import multer from "multer";
 import path from "path";
 
-/* ===============================
-   Multer Setup
-=================================*/
+/* =====================================================
+   📁 Multer Setup (File Upload)
+===================================================== */
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
   filename: (req, file, cb) =>
@@ -14,9 +14,9 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-/* ===============================
-   Zone Mapping (Surat)
-=================================*/
+/* =====================================================
+   🗺️ Zone Mapping (Surat)
+===================================================== */
 const zoneMap = {
   "395001": "Central Zone",
   "395002": "Central Zone",
@@ -27,28 +27,29 @@ const zoneMap = {
   "395007": "South West Zone",
 };
 
-/* ===============================
-   Geocode Function
-=================================*/
+/* =====================================================
+   🌍 Geocode Function (Improved)
+===================================================== */
 const geocodeLocation = async ({ pincode, location }) => {
   try {
+
+    const query = `${location}, Surat, Gujarat, India ${pincode || ""}`;
+
     const response = await axios.get(
       "https://nominatim.openstreetmap.org/search",
       {
         params: {
           format: "json",
-          country: "India",
-          postalcode: pincode || undefined,
-          q: location || undefined,
-          email: "palak.karsariya@gmail.com",
+          q: query,
+          limit: 1,
         },
         headers: {
-          "User-Agent": "CityVisionApp/1.0 (palak.karsariya@gmail.com)",
+          "User-Agent": "CityVisionApp/1.0 (your-email@gmail.com)",
         },
       }
     );
 
-    if (response.data && response.data.length > 0) {
+    if (response.data.length > 0) {
       return {
         lat: response.data[0].lat,
         lon: response.data[0].lon,
@@ -56,35 +57,51 @@ const geocodeLocation = async ({ pincode, location }) => {
     }
 
     return { lat: null, lon: null };
+
   } catch (error) {
-    console.error("Geocoding error:", error.message);
+    console.error("Geocoding Error:", error.message);
     return { lat: null, lon: null };
   }
 };
 
-/* ===============================
-   Add Complaint
-=================================*/
+/* =====================================================
+   ➕ Add Complaint
+===================================================== */
 const addComplaint = async (req, res) => {
+
   try {
-    const { userId, name, category, location, pincode, description } = req.body;
+
+    const {
+      userId,
+      name,
+      category,
+      location,
+      pincode,
+      description
+    } = req.body;
 
     const image = req.file ? req.file.filename : null;
 
+    // 🔹 Validation
     if (!userId || !name || !category || !description) {
       return res.status(400).json({
         success: false,
-        message: "Required fields missing",
+        message: "Required fields missing"
       });
     }
 
-    /* Detect Zone from Pincode */
+    // 🔹 Zone Detection
     const zone = zoneMap[pincode] || "Unknown Zone";
 
-    /* Get Latitude & Longitude */
+    // 🔹 Get Coordinates
     const { lat, lon } = await geocodeLocation({ pincode, location });
 
-    const complaint = new Complaint({
+    // 🔥 Fallback (Never store null)
+    const latitude = lat || 21.1702;
+    const longitude = lon || 72.8311;
+
+    // 🔹 Create Complaint
+    const complaint = await Complaint.create({
       userId,
       name,
       category,
@@ -93,32 +110,36 @@ const addComplaint = async (req, res) => {
       zone,
       description,
       image,
-      latitude: lat,
-      longitude: lon,
+      latitude,
+      longitude,
     });
-
-    await complaint.save();
 
     res.status(201).json({
       success: true,
       message: "Complaint added successfully",
-      complaint,
+      complaint
     });
+
   } catch (error) {
-    console.error("Error adding complaint:", error);
+
+    console.error("Add Complaint Error:", error);
+
     res.status(500).json({
       success: false,
-      message: "Server error while adding complaint",
+      message: "Server error while adding complaint"
     });
+
   }
 };
 
-/* ===============================
-   Get All Complaints (Admin)
-=================================*/
+/* =====================================================
+   📋 Get All Complaints (Admin)
+===================================================== */
 const getAllComplaints = async (req, res) => {
+
   try {
-    const complaints = await Complaint.find();
+
+    const complaints = await Complaint.find().sort({ createdAt: -1 });
 
     const formatted = complaints.map((c) => ({
       ...c._doc,
@@ -127,22 +148,33 @@ const getAllComplaints = async (req, res) => {
         : null,
     }));
 
-    res.status(200).json(formatted);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Error fetching complaints",
+    res.status(200).json({
+      success: true,
+      count: formatted.length,
+      complaints: formatted
     });
+
+  } catch (error) {
+
+    console.error("Get All Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Error fetching complaints"
+    });
+
   }
 };
 
-/* ===============================
-   Get User Complaints
-=================================*/
+/* =====================================================
+   👤 Get User Complaints
+===================================================== */
 const getUserComplaints = async (req, res) => {
+
   try {
+
     const complaints = await Complaint.find({
-      userId: req.params.userId,
+      userId: req.params.userId
     });
 
     const formatted = complaints.map((c) => ({
@@ -152,89 +184,114 @@ const getUserComplaints = async (req, res) => {
         : null,
     }));
 
-    res.status(200).json(formatted);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Error fetching user complaints",
+    res.status(200).json({
+      success: true,
+      complaints: formatted
     });
+
+  } catch (error) {
+
+    console.error("User Complaints Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Error fetching user complaints"
+    });
+
   }
 };
 
-/* ===============================
-   Update Complaint
-=================================*/
+/* =====================================================
+   ✏️ Update Complaint
+===================================================== */
 const updateComplaint = async (req, res) => {
+
   try {
+
     const updateData = { ...req.body };
 
     if (req.file) {
       updateData.image = req.file.filename;
     }
 
-    const updatedComplaint = await Complaint.findByIdAndUpdate(
+    const updated = await Complaint.findByIdAndUpdate(
       req.params.id,
       updateData,
       { new: true }
     );
 
-    if (!updatedComplaint) {
+    if (!updated) {
       return res.status(404).json({
-        message: "Complaint not found",
+        success: false,
+        message: "Complaint not found"
       });
     }
 
-    updatedComplaint.image = updatedComplaint.image
-      ? `http://localhost:1300/uploads/${updatedComplaint.image}`
+    updated.image = updated.image
+      ? `http://localhost:1300/uploads/${updated.image}`
       : null;
 
     res.status(200).json({
+      success: true,
       message: "Complaint updated successfully",
-      complaint: updatedComplaint,
+      complaint: updated
     });
+
   } catch (error) {
-    console.error(error);
+
+    console.error("Update Error:", error);
+
     res.status(500).json({
-      message: "Error updating complaint",
+      success: false,
+      message: "Error updating complaint"
     });
+
   }
 };
 
-/* ===============================
-   Delete Complaint
-=================================*/
+/* =====================================================
+   ❌ Delete Complaint
+===================================================== */
 const deleteComplaint = async (req, res) => {
+
   try {
+
     const deleted = await Complaint.findByIdAndDelete(req.params.id);
 
     if (!deleted) {
       return res.status(404).json({
-        message: "Complaint not found",
+        success: false,
+        message: "Complaint not found"
       });
     }
 
     res.status(200).json({
-      message: "Complaint deleted successfully",
+      success: true,
+      message: "Complaint deleted successfully"
     });
+
   } catch (error) {
-    console.error(error);
+
+    console.error("Delete Error:", error);
+
     res.status(500).json({
-      message: "Error deleting complaint",
+      success: false,
+      message: "Error deleting complaint"
     });
+
   }
 };
 
-/* ===============================
-   Get Department Complaints
-=================================*/
+/* =====================================================
+   🏢 Get Department Complaints
+===================================================== */
 const getDepartmentComplaints = async (req, res) => {
+
   try {
+
     const { category, zone } = req.query;
 
-    const complaints = await Complaint.find({
-      category,
-      zone,
-    });
+    const complaints = await Complaint.find({ category, zone });
 
     const formatted = complaints.map((c) => ({
       ...c._doc,
@@ -243,18 +300,26 @@ const getDepartmentComplaints = async (req, res) => {
         : null,
     }));
 
-    res.status(200).json(formatted);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Error fetching department complaints",
+    res.status(200).json({
+      success: true,
+      complaints: formatted
     });
+
+  } catch (error) {
+
+    console.error("Department Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Error fetching department complaints"
+    });
+
   }
 };
 
-/* ===============================
-   Export
-=================================*/
+/* =====================================================
+   🚀 Export
+===================================================== */
 export {
   upload,
   addComplaint,

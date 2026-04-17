@@ -18,9 +18,8 @@ export const addUser = async (req, res) => {
       });
     }
 
-    // 🔹 Email format validation
+    // 🔹 Email format
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
     if (!emailPattern.test(email)) {
       return res.status(400).json({
         success: false,
@@ -28,9 +27,8 @@ export const addUser = async (req, res) => {
       });
     }
 
-    // 🔹 Check if user already exists
+    // 🔹 Check duplicate email
     const existingUser = await User.findOne({ email });
-
     if (existingUser) {
       return res.status(409).json({
         success: false,
@@ -41,7 +39,6 @@ export const addUser = async (req, res) => {
     // 🔹 Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 🔹 Create user
     const newUser = await User.create({
       name,
       email,
@@ -80,7 +77,7 @@ export const getUsers = async (req, res) => {
   try {
 
     const users = await User.find()
-      .select("-password") // 🔒 hide password
+      .select("-password")
       .sort({ createdAt: -1 });
 
     res.status(200).json({
@@ -145,9 +142,31 @@ export const updateUser = async (req, res) => {
 
     const { name, email, address, role, status, password } = req.body;
 
-    let updateData = { name, email, address, role, status };
+    // 🔹 Check duplicate email (if updating email)
+    if (email) {
+      const existingUser = await User.findOne({
+        email,
+        _id: { $ne: req.params.id }
+      });
 
-    // 🔹 If password updated → hash it
+      if (existingUser) {
+        return res.status(409).json({
+          success: false,
+          message: "Email already in use"
+        });
+      }
+    }
+
+    let updateData = {};
+
+    // 🔹 Only add fields if provided
+    if (name) updateData.name = name;
+    if (email) updateData.email = email;
+    if (address) updateData.address = address;
+    if (role) updateData.role = role;
+    if (status) updateData.status = status;
+
+    // 🔹 Hash password if updated
     if (password) {
       updateData.password = await bcrypt.hash(password, 10);
     }
