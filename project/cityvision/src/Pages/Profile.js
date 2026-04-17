@@ -32,7 +32,7 @@ const Profile = () => {
         `https://citivision-backend.onrender.com/api/Comp/user/${userId}`
       );
   
-      setComplaints(res.data);
+      setComplaints(res.data.complaints);
     };
 
   const token = localStorage.getItem("token");
