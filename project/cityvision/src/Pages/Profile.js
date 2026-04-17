@@ -26,44 +26,17 @@ const Profile = () => {
 
   useEffect(() => {
 
-    const token = localStorage.getItem("token");
-    const userId = localStorage.getItem("userId");
+  const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("userId");
 
-    // 🔒 Redirect if not logged in
-    if (!token || !userId) {
-      navigate("/login");
-      return;
-    }
+  if (!token || !userId) {
+    navigate("/login");
+    return;
+  }
 
-    const fetchComplaints = async () => {
-      try {
+  fetchComplaints(userId);
 
-        const res = await axios.get(
-          `https://citivision-backend.onrender.com/api/Comp/user/${userId}`
-        );
-
-        console.log("API RESPONSE:", res.data);
-
-        // ✅ Handle both API formats (array or object)
-        const data = Array.isArray(res.data)
-          ? res.data
-          : Array.isArray(res.data.complaints)
-          ? res.data.complaints
-          : [];
-
-        setComplaints(data);
-
-      } catch (error) {
-
-        console.log("Error fetching complaints:", error);
-        setComplaints([]);
-
-      }
-    };
-
-    fetchComplaints();
-
-  }, [navigate]);
+}, [navigate]);
 
   /* ===============================
      🚪 Logout
